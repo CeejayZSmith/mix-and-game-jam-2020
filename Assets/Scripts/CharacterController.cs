@@ -5,7 +5,7 @@ using UnityEngine;
 public class CharacterController : MonoBehaviour
 {
     private const float kPHYSICS_SKIIN_DEPTH = 0.1f;
-    
+    private const int kCOLLISION_SIDE_ITERATIONS = 3;
     // Physics and Collisions
     private Vector2 m_velocity = Vector2.zero;
     private Vector2 m_inputTargetVelocity = Vector2.zero;
@@ -57,37 +57,128 @@ public class CharacterController : MonoBehaviour
         m_isCollisionUp = false;
     }
 
-    protected Vector2 ResolveCollision(Vector2 currentPosition, ref Vector2 currentVelocity)
+    private bool CheckSideCollision(Vector2 sideStart, Vector2 sideEnd, Vector2 sideNormal, float distanceMoved, out float timeOfCollision)
     {
-        Vector2 newPosition = currentPosition + (currentVelocity * Time.fixedDeltaTime);
-        Vector2 bottomCenter = currentPosition + new Vector2(0, -m_collider.bounds.size.y/2);
-
-
-        float timeLeftAfterCollisionResolve = Time.fixedDeltaTime;
-        if(currentVelocity.y <= 0)
+        if(distanceMoved == 0)
         {
-            float ySpeed = -currentVelocity.y;
-            Vector2 origin = bottomCenter + (Vector2.up*kPHYSICS_SKIIN_DEPTH);
-            float distanceMovedThisTick = ySpeed * Time.fixedDeltaTime;
+            timeOfCollision = 0;
+            return false;
+        }
+
+        Vector2 sideDiff = sideEnd - sideStart;
+        for(int i = 0; i < kCOLLISION_SIDE_ITERATIONS; i++)
+        {
+
+            Vector2 origin = sideStart + (i*(sideDiff/kCOLLISION_SIDE_ITERATIONS)) + (-sideNormal*kPHYSICS_SKIIN_DEPTH);
             // Raycast from middle center to check if on grounud
-            RaycastHit2D hit = Physics2D.Raycast(bottomCenter + (Vector2.up*kPHYSICS_SKIIN_DEPTH), Vector2.down, distanceMovedThisTick + kPHYSICS_SKIIN_DEPTH, m_worldLayerMask );
+            RaycastHit2D hit = Physics2D.Raycast(origin, sideNormal, distanceMoved + kPHYSICS_SKIIN_DEPTH, m_worldLayerMask );
 
             if(hit.collider != null)
             {
                 Debug.DrawLine(origin, hit.point, Color.red, Time.fixedDeltaTime);
-                m_isCollisionDown = true;
-                // Figure out at what point in the frame did the collision occour.
-                float t = (hit.distance - kPHYSICS_SKIIN_DEPTH) / distanceMovedThisTick;
 
-                newPosition = currentPosition + ((t * Time.fixedDeltaTime) * currentVelocity);
-                currentVelocity.y = Mathf.Max(0, currentVelocity.y);
-                timeLeftAfterCollisionResolve -= t * Time.fixedDeltaTime;
+                // Figure out at what point in the frame did the collision occour.
+                float t = (hit.distance - kPHYSICS_SKIIN_DEPTH) / distanceMoved;
+                timeOfCollision = Mathf.Max(0, t);
+                // No uneven ground or slopes so the first collision will most likely be the only collision, unless are very high speeds.
+                // To fix this we can just iterate through every raycast and only set timeOfCollision if its smaller than the current timeOfCollision
+                return true;
             }
             else
             {
-                Debug.DrawLine(origin, origin + Vector2.down * (distanceMovedThisTick + kPHYSICS_SKIIN_DEPTH), Color.blue, Time.fixedDeltaTime);
+                Debug.DrawLine(origin, origin + (sideNormal * (distanceMoved +kPHYSICS_SKIIN_DEPTH )), Color.blue, Time.fixedDeltaTime);
             }
         }
+        timeOfCollision = 0;
+        return false;
+    }
+
+    protected Vector2 ResolveCollision(Vector2 currentPosition, ref Vector2 currentVelocity)
+    {
+        Vector2 newPosition = currentPosition + (currentVelocity * Time.fixedDeltaTime);
+        Vector2 bottomLeftOffset = new Vector2(-m_collider.bounds.size.x/2, -m_collider.bounds.size.y/2);
+        Vector2 topRightOffset = -bottomLeftOffset;
+        Vector2 topLeftOffset = new Vector2(bottomLeftOffset.x, topRightOffset.y);
+        Vector2 bottomRightOffset = new Vector2(-bottomLeftOffset.x, bottomLeftOffset.y);
+
+        float timeOfVerticalCollision = 0.0f;
+        if(currentVelocity.y > 0)
+        {
+            m_isCollisionUp = CheckSideCollision(topLeftOffset + currentPosition, topRightOffset + currentPosition, Vector2.up, currentVelocity.y * Time.fixedDeltaTime, out timeOfVerticalCollision);
+        }
+        else
+        {
+            m_isCollisionDown = CheckSideCollision(bottomLeftOffset + currentPosition, bottomRightOffset + currentPosition, Vector2.down, -currentVelocity.y * Time.fixedDeltaTime, out timeOfVerticalCollision);
+        }
+
+        float timeOfHorizontalCollision = 0.0f;
+        if(currentVelocity.x > 0)
+        {
+            m_isCollisionRight = CheckSideCollision(topRightOffset + currentPosition, bottomRightOffset + currentPosition, Vector2.right, currentVelocity.x * Time.fixedDeltaTime, out timeOfHorizontalCollision);
+        }
+        else
+        {
+            m_isCollisionLeft = CheckSideCollision(topLeftOffset + currentPosition, bottomLeftOffset + currentPosition, Vector2.left, -currentVelocity.x * Time.fixedDeltaTime, out timeOfHorizontalCollision);
+        }
+
+        bool hasHorizontalCollision = m_isCollisionRight || m_isCollisionLeft;
+        bool hasVerticalCollision = m_isCollisionUp || m_isCollisionDown;
+        bool hasCollision = hasVerticalCollision || hasHorizontalCollision;
+
+        if(hasCollision == false)
+        {
+            newPosition = currentPosition + (currentVelocity * Time.fixedDeltaTime);
+            return newPosition;
+        }
+        else
+        {
+            float remainingTime = Time.fixedDeltaTime;
+            if(hasVerticalCollision == true && hasHorizontalCollision == false)
+            {
+                float time = timeOfVerticalCollision * Time.fixedDeltaTime; 
+                newPosition = currentPosition + (currentVelocity * time);
+                remainingTime -= time;
+                currentVelocity.y = 0;
+                newPosition += currentVelocity * remainingTime;
+            }
+            else if(hasHorizontalCollision == true && hasVerticalCollision == false)
+            {
+                float time = timeOfHorizontalCollision * Time.fixedDeltaTime; 
+                newPosition = currentPosition + (currentVelocity * time);
+                currentVelocity.x = 0;
+                remainingTime -= time;
+                newPosition += currentVelocity * remainingTime;
+            }
+            else
+            {
+                bool verticalFirst = timeOfVerticalCollision < timeOfHorizontalCollision;
+
+                if(verticalFirst == true)
+                {
+                    float time = timeOfVerticalCollision * Time.fixedDeltaTime; 
+                    newPosition = currentPosition + (currentVelocity * time);
+                    remainingTime -= time;
+                    
+                    currentVelocity.y = 0;
+                    newPosition += currentVelocity * Mathf.Max(0, ((timeOfHorizontalCollision * Time.fixedDeltaTime) - time));
+                }
+                else
+                {
+                    float time = timeOfHorizontalCollision * Time.fixedDeltaTime; 
+                    newPosition = currentPosition + (currentVelocity * time);
+                    remainingTime -= time;
+                    
+                    currentVelocity.x = 0;
+                    // min of 0 incase minus very small values
+                    newPosition += currentVelocity * Mathf.Max(0, ((timeOfVerticalCollision * Time.fixedDeltaTime) - time));
+                }
+                currentVelocity = Vector2.zero;
+            }
+
+            bool firstCollisionIsVertical = timeOfVerticalCollision < timeOfHorizontalCollision;
+        }
+
+        float timeLeftAfterCollisionResolve = Time.fixedDeltaTime;
 
         newPosition += currentVelocity * timeLeftAfterCollisionResolve;
 
