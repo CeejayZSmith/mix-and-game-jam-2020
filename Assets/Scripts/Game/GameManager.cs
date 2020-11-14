@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     private static GameManager instance = null;
     public static GameManager Instance {get => instance;}
 
+    private int m_currentMaxPlayers = 3;
+
     public CharacterController m_currentCharacterController = null;
     public GameObject m_characterControllerPrefab = null;
     public Cinemachine.CinemachineVirtualCamera m_vCamera = null;
@@ -55,35 +57,50 @@ public class GameManager : MonoBehaviour
     {
         AttemptPurchaseCharacterController();
     }
+
+    public int CalculateNumberOfAliveCharacters()
+    {
+        int i = 0;
+        foreach(CharacterController cc in m_allCharacterControllers)
+        {
+            if(cc.m_dead == false)
+            {
+                i++;
+            }
+        }
+
+        return i;
+    }
     public bool AttemptPurchaseCharacterController()
     {
-            if(m_playerAccountTracker.CanPurchase(GameValues.kCOST_OF_CHARACTERCONTROLLER) == true)
+        if(m_playerAccountTracker.CanPurchase(GameValues.kCOST_OF_CHARACTERCONTROLLER) == true && CalculateNumberOfAliveCharacters() < m_currentMaxPlayers)
+        {
+            m_playerAccountTracker.SpendMoney(GameValues.kCOST_OF_CHARACTERCONTROLLER);
+
+            CharacterController newCharacterController = null;
+
+            // Find dead character in pool.
+            foreach(CharacterController cc in m_allCharacterControllers)
             {
-                m_playerAccountTracker.SpendMoney(GameValues.kCOST_OF_CHARACTERCONTROLLER);
-
-                CharacterController newCharacterController = null;
-
-                // Find dead character in pool.
-                foreach(CharacterController cc in m_allCharacterControllers)
+                if(cc.m_dead == true)
                 {
-                    if(cc.m_dead == true)
-                    {
-                        m_currentCharacterController = cc;
-                        break;
-                    }
+                    newCharacterController = cc;
+                    newCharacterController.Spawn(m_playerSpawnPoint.transform.position);
+                    break;
                 }
-
-                if(newCharacterController == null)
-                {
-                    newCharacterController = InstantiateNewCharacterController();
-                }
-                if(m_currentCharacterController == null || m_currentCharacterController.m_dead == true)
-                {
-                    m_currentCharacterController = newCharacterController;
-                }
-                return true;
             }
-            return false;
+
+            if(newCharacterController == null)
+            {
+                newCharacterController = InstantiateNewCharacterController();
+            }
+            if(m_currentCharacterController == null || m_currentCharacterController.m_dead == true)
+            {
+                m_currentCharacterController = newCharacterController;
+            }
+            return true;
+        }
+        return false;
     }
 
     public void KillCharacterController(CharacterController cc)
