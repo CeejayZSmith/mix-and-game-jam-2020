@@ -53,6 +53,43 @@ public class GameManager : MonoBehaviour
         #endif
     }
 
+    public void TryPurchaseRandomCharacterControllerSwap()
+    {
+        int aliveCharacters = CalculateNumberOfAliveCharacters();
+        if(m_playerAccountTracker.CanPurchase(GameValues.kCOST_OF_SWITCHING_TO_RANDOM_CONTROLLER) == true && CalculateNumberOfAliveCharacters() > 1)
+        {
+            // Oh no. list of character controllers contains alive and not alive characters for pooling.
+            // Converting randomIndex to alive index is going to be messy unless everything is refactored. :(
+            
+            int randomIndex = Random.Range(0, aliveCharacters);
+            
+            CharacterController cc = null;
+            int checkedIndex = 0;
+            for(int i = 0, length = m_allCharacterControllers.Count; i < length * 2; i++)
+            {
+                CharacterController ccTemp = m_allCharacterControllers[i%length];
+
+                if(ccTemp.m_dead == false)
+                {
+                    if(randomIndex <= checkedIndex && ccTemp != m_currentCharacterController)
+                    {
+                        cc = ccTemp;
+                        break;
+                    }
+
+                    if(ccTemp != m_currentCharacterController)
+                    {
+                        cc = m_currentCharacterController;
+                    }
+                    checkedIndex++;
+                }
+            }
+
+            // Update function should handle setting this up with the camera and player input next frame at most (depending on script execution order).
+            m_currentCharacterController = cc;
+        }
+    }
+
     public void IncreaseMaxPlayerCount(int amount)
     {
         m_currentMaxPlayers += amount;
