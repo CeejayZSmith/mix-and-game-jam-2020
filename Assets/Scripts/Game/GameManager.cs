@@ -44,6 +44,13 @@ public class GameManager : MonoBehaviour
         return cc;
     }
 
+    public void AddMoney(int amount)
+    {
+        #if DEVELOPMENT_BUILD || UNITY_EDITOR
+            m_playerAccountTracker.IncrementMoney(amount);
+        #endif
+    }
+
     public void TryPurchaseCharacterController()
     {
         AttemptPurchaseCharacterController();
@@ -132,11 +139,16 @@ public class GameManager : MonoBehaviour
             if(cc.transform.position.y < m_yValueToDieFrom)
             {
                 KillCharacterController(cc);
+                break;
             }
         }
 
         m_playerInput.m_characterController = m_currentCharacterController;
-        m_vCamera.m_Follow = m_playerInput.m_characterController.transform;
+        if(m_currentCharacterController != null)
+        {
+            m_vCamera.m_Follow = m_playerInput.m_characterController.transform;
+        }
+
     }
 
     private void RespawnPlayer(CharacterController cc)

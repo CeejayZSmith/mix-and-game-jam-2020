@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[SelectionBase]
 public class Tile : MonoBehaviour
 {
     [SerializeField] public GameObject m_renderer = null;

@@ -6,6 +6,7 @@ public class CharacterController : MonoBehaviour
 {
     public bool m_dead = false;
     private const float kPHYSICS_SKIIN_DEPTH = 0.1f;
+
     private const int kCOLLISION_SIDE_ITERATIONS = 3;
     [SerializeField]
     private float m_minJumpHeight = 2.0f;
@@ -15,6 +16,8 @@ public class CharacterController : MonoBehaviour
     private bool m_isJumping = false;
     // Physics and Collisions
     private Vector2 m_velocity = Vector2.zero;
+    public float m_movementDampingInAir = 1.0f;
+    private float m_verticalAccelerationSmoothDamp = 0.0f; 
     private Vector2 m_inputTargetVelocity = Vector2.zero;
     private Collider2D m_collider = null;
     private List<Collider2D> m_groundColliders = new List<Collider2D>();
@@ -56,7 +59,17 @@ public class CharacterController : MonoBehaviour
         m_wasOnGround = m_isOnGround;
         ResetFlags();
 
-        m_velocity.x = m_inputTargetVelocity.x;
+        if(m_wasOnGround == true)
+        {
+            m_velocity.x = m_inputTargetVelocity.x;
+            m_verticalAccelerationSmoothDamp = 0;
+        }
+        else
+        {
+            m_velocity.x = Mathf.SmoothDamp(m_velocity.x, m_inputTargetVelocity.x, ref m_verticalAccelerationSmoothDamp, m_movementDampingInAir);
+        }
+
+
         Vector2 currentPosition = transform.position;
         Vector2 resolvedPosition = ResolveCollision(currentPosition, ref m_velocity);
 
