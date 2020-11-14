@@ -53,6 +53,11 @@ public class GameManager : MonoBehaviour
         #endif
     }
 
+    public void IncreaseMaxPlayerCount(int amount)
+    {
+        m_currentMaxPlayers += amount;
+    }
+
     public void TryPurchaseCharacterController()
     {
         AttemptPurchaseCharacterController();

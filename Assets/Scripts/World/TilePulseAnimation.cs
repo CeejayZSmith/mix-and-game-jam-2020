@@ -44,9 +44,19 @@ public class TilePulseAnimation : MonoBehaviour
             
 
             Vector3 scaleVec = new Vector3(scaleYOnly? 1.0f : scale, scale, 1.0f); 
-            m_tile.m_renderer.transform.localScale = scaleVec;
-            // assumes local position should be zero without scaling.
-            m_tile.m_renderer.transform.localPosition = ((1-scale) * m_scaleFrom)/m_tile.transform.localScale.magnitude;
+            if(m_tile != null)
+            {
+                 m_tile.m_renderer.transform.localScale = scaleVec;
+                // assumes local position should be zero without scaling.
+                m_tile.m_renderer.transform.localPosition = ((1-scale) * m_scaleFrom)/m_tile.transform.localScale.magnitude;
+            }
+            else
+            {
+                transform.localScale = scaleVec;
+                // assumes local position should be zero without scaling.
+                transform.localPosition = ((1-scale) * m_scaleFrom);
+            }
+
             yield return null;
         }
         yield break;

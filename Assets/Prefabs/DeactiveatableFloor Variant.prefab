@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9fc02ac3cc43a44194400033a233fc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scaleYOnly: 0
+  scaleYOnly: 1
   m_squishScale: 1.3
   m_normalScale: 1
   m_animationLength: 0.2
@@ -31,6 +31,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_price: 25
   m_uiPriceText: {fileID: 0}
+  m_mainUIElement: {fileID: 0}
   m_onPurchasedEvent:
     m_PersistentCalls:
       m_Calls:
