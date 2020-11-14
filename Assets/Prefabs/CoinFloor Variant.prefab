@@ -1,5 +1,21 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &4873898846249164890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5914309266753670130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9fc02ac3cc43a44194400033a233fc4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_squishScale: 0.8
+  m_normalScale: 1
+  m_animationLength: 0.15
+  m_scaleFrom: {x: 0, y: -0.5, z: 0}
 --- !u!114 &6739140609255221279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23,7 +39,7 @@ PrefabInstance:
     - target: {fileID: 4078189790730571328, guid: af2a6b61669dde44f8ac5a566bf08bbc,
         type: 3}
       propertyPath: m_onPlayerLandedEvent.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4078189790730571328, guid: af2a6b61669dde44f8ac5a566bf08bbc,
         type: 3}
@@ -48,6 +64,31 @@ PrefabInstance:
     - target: {fileID: 4078189790730571328, guid: af2a6b61669dde44f8ac5a566bf08bbc,
         type: 3}
       propertyPath: m_onPlayerLandedEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 4078189790730571328, guid: af2a6b61669dde44f8ac5a566bf08bbc,
+        type: 3}
+      propertyPath: m_onPlayerLandedEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4078189790730571328, guid: af2a6b61669dde44f8ac5a566bf08bbc,
+        type: 3}
+      propertyPath: m_onPlayerLandedEvent.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4078189790730571328, guid: af2a6b61669dde44f8ac5a566bf08bbc,
+        type: 3}
+      propertyPath: m_onPlayerLandedEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 4873898846249164890}
+    - target: {fileID: 4078189790730571328, guid: af2a6b61669dde44f8ac5a566bf08bbc,
+        type: 3}
+      propertyPath: m_onPlayerLandedEvent.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: DoAnimation
+      objectReference: {fileID: 0}
+    - target: {fileID: 4078189790730571328, guid: af2a6b61669dde44f8ac5a566bf08bbc,
+        type: 3}
+      propertyPath: m_onPlayerLandedEvent.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 4885520855979146295, guid: af2a6b61669dde44f8ac5a566bf08bbc,

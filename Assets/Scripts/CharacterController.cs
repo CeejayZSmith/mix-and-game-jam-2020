@@ -13,7 +13,7 @@ public class CharacterController : MonoBehaviour
     private Vector2 m_inputTargetVelocity = Vector2.zero;
     private Collider2D m_collider = null;
     private List<Collider2D> m_groundColliders = new List<Collider2D>();
-    private bool m_wasOnGround = false;
+    private bool m_wasOnGround = false, m_isOnGround = false;
 
     private bool m_isCollisionUp, m_isCollisionDown, m_isCollisionRight, m_isCollisionLeft;
     [SerializeField]
@@ -32,14 +32,14 @@ public class CharacterController : MonoBehaviour
 
     protected void FixedUpdate()
     {
-        m_wasOnGround = m_isCollisionDown;
+        m_wasOnGround = m_isOnGround;
         ResetFlags();
 
         m_velocity.x = m_inputTargetVelocity.x;
         Vector2 currentPosition = transform.position;
         Vector2 resolvedPosition = ResolveCollision(currentPosition, ref m_velocity);
 
-        if(m_wasOnGround == false && m_isCollisionDown == true)
+        if(m_wasOnGround == false && m_isOnGround == true)
         {
             OnLanded();
         }
@@ -73,7 +73,7 @@ public class CharacterController : MonoBehaviour
 
     public void AttemptJump()
     {
-        if(m_isCollisionDown == false)
+        if(m_isOnGround == false)
         {                
             return;
         }
@@ -82,6 +82,7 @@ public class CharacterController : MonoBehaviour
     }
     private void Jump()
     {
+        m_isOnGround = false;
         m_isCollisionDown = false;
 
         float impulseVelocity = Mathf.Sqrt(-(2*Physics2D.gravity.y*m_minJumpHeight));
@@ -108,6 +109,7 @@ public class CharacterController : MonoBehaviour
         m_isCollisionLeft = false;
         m_isCollisionRight = false;
         m_isCollisionUp = false;
+        m_isOnGround = false;
         m_groundColliders.Clear();
     }
 
@@ -171,8 +173,7 @@ public class CharacterController : MonoBehaviour
         }
         else
         {
-            m_isCollisionDown = CheckSideCollision(bottomLeftOffset + currentPosition, bottomRightOffset + currentPosition, Vector2.down, -currentVelocity.y * Time.fixedDeltaTime, out timeOfVerticalCollision, ref m_groundColliders);
-            m_isCollisionDown |= m_wasOnGround;
+            m_isCollisionDown = CheckSideCollision(bottomLeftOffset + currentPosition, bottomRightOffset + currentPosition, Vector2.down, -currentVelocity.y * Time.fixedDeltaTime, out timeOfVerticalCollision);
         }
 
         float timeOfHorizontalCollision = 0.0f;
@@ -240,8 +241,7 @@ public class CharacterController : MonoBehaviour
                 }
                 else
                 {
-                    m_isCollisionDown = CheckSideCollision(bottomLeftOffset + newPosition, bottomRightOffset + newPosition, Vector2.down, -currentVelocity.y * remainingTime, out timeOfVerticalCollision, ref m_groundColliders);
-                    m_isCollisionDown |= m_wasOnGround;
+                    m_isCollisionDown = CheckSideCollision(bottomLeftOffset + newPosition, bottomRightOffset + newPosition, Vector2.down, -currentVelocity.y * remainingTime, out timeOfVerticalCollision);
                 }
 
                 if(m_isCollisionDown || m_isCollisionUp)
@@ -254,6 +254,7 @@ public class CharacterController : MonoBehaviour
                 }
             }
         }
+        m_isOnGround = CheckSideCollision(bottomLeftOffset + newPosition, bottomRightOffset + newPosition, Vector2.down, 0.001f, out timeOfVerticalCollision, ref m_groundColliders);
         return newPosition;
     }
 

@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e0e4e5b3e81b6242b4cf103ebe27370, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  renderer: {fileID: 0}
+  m_renderer: {fileID: 3365912725206731831}
   m_onPlayerLandedEvent:
     m_PersistentCalls:
       m_Calls: []
