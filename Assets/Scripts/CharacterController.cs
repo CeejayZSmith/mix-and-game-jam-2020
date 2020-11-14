@@ -8,6 +8,10 @@ public class CharacterController : MonoBehaviour
     private const int kCOLLISION_SIDE_ITERATIONS = 3;
     [SerializeField]
     private float m_minJumpHeight = 2.0f;
+    private float m_timeLeftGround = 0.0f;
+    [SerializeField]
+    private float m_recoveryJumpTime = 0.1f;
+    private bool m_isJumping = false;
     // Physics and Collisions
     private Vector2 m_velocity = Vector2.zero;
     private Vector2 m_inputTargetVelocity = Vector2.zero;
@@ -44,6 +48,11 @@ public class CharacterController : MonoBehaviour
             OnLanded();
         }
 
+        if(m_wasOnGround == true && m_isOnGround == false)
+        {
+            m_timeLeftGround = Time.time;
+        }
+
         transform.Translate(resolvedPosition - currentPosition);
 
         m_velocity.y += Physics2D.gravity.y * Time.fixedDeltaTime;
@@ -73,7 +82,7 @@ public class CharacterController : MonoBehaviour
 
     public void AttemptJump()
     {
-        if(m_isOnGround == false)
+        if((m_isOnGround == false && m_timeLeftGround + m_recoveryJumpTime < Time.time) || m_isJumping == true)
         {                
             return;
         }
@@ -82,8 +91,10 @@ public class CharacterController : MonoBehaviour
     }
     private void Jump()
     {
+        m_timeLeftGround = Time.time;
         m_isOnGround = false;
         m_isCollisionDown = false;
+        m_isJumping = true;
 
         float impulseVelocity = Mathf.Sqrt(-(2*Physics2D.gravity.y*m_minJumpHeight));
         m_velocity.y = Mathf.Max(m_velocity.y, impulseVelocity);
@@ -101,6 +112,7 @@ public class CharacterController : MonoBehaviour
                 tile.OnPlayerLandedOnTile();
             }
         }
+        m_isJumping = false;
     }
 
     protected void ResetFlags()
