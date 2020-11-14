@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
 
     public CharacterController m_currentCharacterController = null;
     public GameObject m_characterControllerPrefab = null;
+    public Cinemachine.CinemachineVirtualCamera m_vCamera = null;
     public List<CharacterController> m_allCharacterControllers = new List<CharacterController>();
 
     public enum Milestone
@@ -69,8 +70,10 @@ public class GameManager : MonoBehaviour
                 {
                     newCharacterController = InstantiateNewCharacterController();
                 }
-
-                m_currentCharacterController = newCharacterController;
+                if(m_currentCharacterController == null || m_currentCharacterController.m_dead == true)
+                {
+                    m_currentCharacterController = newCharacterController;
+                }
                 return true;
             }
             return false;
@@ -128,11 +131,12 @@ public class GameManager : MonoBehaviour
 
             if(cc.transform.position.y < m_yValueToDieFrom)
             {
-               KillCharacterController(cc);
+                KillCharacterController(cc);
             }
         }
 
         m_playerInput.m_characterController = m_currentCharacterController;
+        m_vCamera.m_Follow = m_playerInput.m_characterController.transform;
     }
 
     private void RespawnPlayer(CharacterController cc)
