@@ -8,7 +8,7 @@ public class PlayerInput : MonoBehaviour
 
     protected void Update()
     {
-        Vector2 movementInput = new Vector2(Input.GetAxisRaw("HorizontalMovement"), Input.GetAxisRaw("VerticalMovement"));
+        Vector2 movementInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         if(movementInput.sqrMagnitude > 1.0f)
         {
             movementInput.Normalize();
