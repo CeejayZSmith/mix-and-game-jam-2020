@@ -96,9 +96,14 @@ public class CharacterController : MonoBehaviour
         m_isCollisionDown = false;
         m_isJumping = true;
 
-        float impulseVelocity = Mathf.Sqrt(-(2*Physics2D.gravity.y*m_minJumpHeight));
+        float impulseVelocity = JumpVelocity();
         m_velocity.y = Mathf.Max(m_velocity.y, impulseVelocity);
         OnJumpBegin();
+    }
+
+    private float JumpVelocity()
+    {
+        return Mathf.Sqrt(-(2*Physics2D.gravity.y*m_minJumpHeight));
     }
 
     private void OnLanded()
@@ -172,6 +177,7 @@ public class CharacterController : MonoBehaviour
 
     protected Vector2 ResolveCollision(Vector2 currentPosition, ref Vector2 currentVelocity)
     {
+        Vector2 preVelocity = currentVelocity;
         Vector2 newPosition = currentPosition + (currentVelocity * Time.fixedDeltaTime);
         Vector2 bottomLeftOffset = new Vector2(-m_collider.bounds.size.x/2, -m_collider.bounds.size.y/2);
         Vector2 topRightOffset = -bottomLeftOffset;
@@ -218,6 +224,7 @@ public class CharacterController : MonoBehaviour
                 remainingTime -= time;
                 
                 currentVelocity.y = 0;
+
 
                 if(currentVelocity.x > 0)
                 {
@@ -266,7 +273,21 @@ public class CharacterController : MonoBehaviour
                 }
             }
         }
+        m_groundColliders.Clear();
         m_isOnGround = CheckSideCollision(bottomLeftOffset + newPosition, bottomRightOffset + newPosition, Vector2.down, 0.001f, out timeOfVerticalCollision, ref m_groundColliders);
+        if(m_groundColliders.Count > 0)
+        {
+            foreach(Collider2D collider in m_groundColliders)
+            {
+                CoinTileModule tile = collider.GetComponent<CoinTileModule>();
+                if(tile != null)
+                {
+                    // auto jump on coin tiles
+                    currentVelocity.y = JumpVelocity();
+                    break;
+                }
+            }
+        }
         return newPosition;
     }
 

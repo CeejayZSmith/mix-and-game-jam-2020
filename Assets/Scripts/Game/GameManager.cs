@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
         switch(m_currentMileStone)
         {
             case Milestone.InitialMilestone:
-                return 10;
+                return 25;
             case Milestone.LastMilestone:
                 return 1000000;
         }
