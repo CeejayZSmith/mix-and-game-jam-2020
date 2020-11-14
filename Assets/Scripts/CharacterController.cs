@@ -5,9 +5,9 @@ using UnityEngine;
 public class CharacterController : MonoBehaviour
 {
     public bool m_dead = false;
-    private const float kPHYSICS_SKIIN_DEPTH = 0.1f;
+    private const float kPHYSICS_SKIIN_DEPTH = 0.03f;
 
-    private const int kCOLLISION_SIDE_ITERATIONS = 3;
+    private const int kCOLLISION_SIDE_ITERATIONS = 5;
     [SerializeField]
     private float m_minJumpHeight = 2.0f;
     private float m_timeLeftGround = 0.0f;
