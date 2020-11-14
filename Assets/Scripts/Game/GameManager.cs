@@ -8,6 +8,9 @@ public class GameManager : MonoBehaviour
     private float m_yValueToDieFrom = -15.0f;
     private static GameManager instance = null;
     public static GameManager Instance {get => instance;}
+    public float m_timeAtStartOfGame = 0.0f;
+
+    public static float s_timeTaken = 0;
 
     private int m_currentMaxPlayers = 3;
 
@@ -28,11 +31,15 @@ public class GameManager : MonoBehaviour
     public HUDView m_hudView = null;
     public PlayerInput m_playerInput = null;
 
+    public UnityEngine.Events.UnityEvent m_onWinEvent = new UnityEngine.Events.UnityEvent();
+    public bool m_showWin = false;
+
 
     public delegate void MilestoneEvent(Milestone milstone);
     public event MilestoneEvent OnMilestoneAchieved;
     public void OnEnable()
     {
+        m_timeAtStartOfGame = Time.unscaledTime;
         instance = this;
         m_playerAccountTracker = new PlayerAccountTracker();
         RespawnPlayer(m_currentCharacterController);
@@ -58,6 +65,7 @@ public class GameManager : MonoBehaviour
         int aliveCharacters = CalculateNumberOfAliveCharacters();
         if(m_playerAccountTracker.CanPurchase(GameValues.kCOST_OF_SWITCHING_TO_RANDOM_CONTROLLER) == true && CalculateNumberOfAliveCharacters() > 1)
         {
+            m_playerAccountTracker.SpendMoney(GameValues.kCOST_OF_SWITCHING_TO_RANDOM_CONTROLLER);
             // Oh no. list of character controllers contains alive and not alive characters for pooling.
             // Converting randomIndex to alive index is going to be messy unless everything is refactored. :(
             
@@ -88,6 +96,23 @@ public class GameManager : MonoBehaviour
             // Update function should handle setting this up with the camera and player input next frame at most (depending on script execution order).
             m_currentCharacterController = cc;
         }
+    }
+
+    public void TryPurchaseFinalUpgrade()
+    {
+        if(m_playerAccountTracker.CanPurchase(GameValues.kCOST_OF_WIN) == true && m_showWin == false)
+        {
+            m_playerAccountTracker.SpendMoney(GameValues.kCOST_OF_WIN);
+            s_timeTaken = Time.unscaledTime - m_timeAtStartOfGame;
+            OnWin();
+        }
+    }
+
+    public void OnWin()
+    {
+        m_showWin = true;
+
+        m_onWinEvent?.Invoke();
     }
 
     public void IncreaseMaxPlayerCount(int amount)
