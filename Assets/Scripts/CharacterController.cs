@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CharacterController : MonoBehaviour
 {
+    public bool m_dead = false;
     private const float kPHYSICS_SKIIN_DEPTH = 0.1f;
     private const int kCOLLISION_SIDE_ITERATIONS = 3;
     [SerializeField]
@@ -32,8 +33,24 @@ public class CharacterController : MonoBehaviour
     protected void Awake()
     {
         m_collider = this.GetComponent<Collider2D>();
+        GameManager.Instance.m_allCharacterControllers.Add(this);
     }
 
+
+    public void Spawn(Vector2 position)
+    {
+        transform.position = position;
+        m_velocity = Vector2.zero;
+        m_dead = false;
+        this.gameObject.SetActive(true);
+    }
+
+    public void PrepareForPool()
+    {
+        m_dead = true;
+        m_velocity = Vector2.zero;
+        this.gameObject.SetActive(false);
+    }
     protected void FixedUpdate()
     {
         m_wasOnGround = m_isOnGround;

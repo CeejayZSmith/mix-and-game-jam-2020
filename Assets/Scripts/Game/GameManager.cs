@@ -9,6 +9,10 @@ public class GameManager : MonoBehaviour
     private static GameManager instance = null;
     public static GameManager Instance {get => instance;}
 
+    public CharacterController m_currentCharacterController = null;
+    public GameObject m_characterControllerPrefab = null;
+    public List<CharacterController> m_allCharacterControllers = new List<CharacterController>();
+
     public enum Milestone
     {
         InitialMilestone = 0,
@@ -19,8 +23,8 @@ public class GameManager : MonoBehaviour
     public GameObject m_playerSpawnPoint = null;
     public PlayerAccountTracker m_playerAccountTracker = new PlayerAccountTracker();
     public HUDView m_hudView = null;
+    public PlayerInput m_playerInput = null;
 
-    public CharacterController m_player = null;
 
     public delegate void MilestoneEvent(Milestone milstone);
     public event MilestoneEvent OnMilestoneAchieved;
@@ -28,8 +32,79 @@ public class GameManager : MonoBehaviour
     {
         instance = this;
         m_playerAccountTracker = new PlayerAccountTracker();
-        RespawnPlayer();
+        RespawnPlayer(m_currentCharacterController);
     } 
+
+    public CharacterController InstantiateNewCharacterController()
+    {
+        GameObject controller = Instantiate(m_characterControllerPrefab);
+        CharacterController cc = controller.GetComponent<CharacterController>();
+        RespawnPlayer(cc);
+        return cc;
+    }
+
+    public void TryPurchaseCharacterController()
+    {
+        AttemptPurchaseCharacterController();
+    }
+    public bool AttemptPurchaseCharacterController()
+    {
+            if(m_playerAccountTracker.CanPurchase(GameValues.kCOST_OF_CHARACTERCONTROLLER) == true)
+            {
+                m_playerAccountTracker.SpendMoney(GameValues.kCOST_OF_CHARACTERCONTROLLER);
+
+                CharacterController newCharacterController = null;
+
+                // Find dead character in pool.
+                foreach(CharacterController cc in m_allCharacterControllers)
+                {
+                    if(cc.m_dead == true)
+                    {
+                        m_currentCharacterController = cc;
+                        break;
+                    }
+                }
+
+                if(newCharacterController == null)
+                {
+                    newCharacterController = InstantiateNewCharacterController();
+                }
+
+                m_currentCharacterController = newCharacterController;
+                return true;
+            }
+            return false;
+    }
+
+    public void KillCharacterController(CharacterController cc)
+    {   
+        cc.PrepareForPool();
+        if(cc == m_currentCharacterController)
+        {
+            KillCurrentCharacterController();
+        }
+    }
+    public void KillCurrentCharacterController()
+    {
+        m_currentCharacterController.PrepareForPool();
+        m_currentCharacterController = null;
+        foreach(CharacterController cc in m_allCharacterControllers)
+        {
+            if(cc.m_dead == false)
+            {
+                m_currentCharacterController = cc;
+                break;
+            }
+        }
+
+        if(m_currentCharacterController == null)
+        {
+            if(AttemptPurchaseCharacterController() == false)
+            {
+                Debug.Log("Game Over?");
+            }
+        }
+    }
     
     public void Update()
     {
@@ -43,19 +118,26 @@ public class GameManager : MonoBehaviour
                 m_currentMileStone = ((Milestone)((int)m_currentMileStone + 1));
             }
         }
-    }
-
-    private void FixedUpdate()
-    {
-        if(m_player.transform.position.y < m_yValueToDieFrom)
+        
+        foreach(CharacterController cc in m_allCharacterControllers)
         {
-            RespawnPlayer();
+            if(cc.m_dead == true)
+            {
+                continue;
+            }
+
+            if(cc.transform.position.y < m_yValueToDieFrom)
+            {
+               KillCharacterController(cc);
+            }
         }
+
+        m_playerInput.m_characterController = m_currentCharacterController;
     }
 
-    private void RespawnPlayer()
+    private void RespawnPlayer(CharacterController cc)
     {
-        m_player.transform.position = m_playerSpawnPoint.transform.position;
+        cc.Spawn(m_playerSpawnPoint.transform.position);
     }
 
     public int NextMilestoneTargetAmount()

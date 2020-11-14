@@ -14,6 +14,11 @@ public class PlayerInput : MonoBehaviour
             movementInput.Normalize();
         }
 
+        if(m_characterController == null)
+        {
+            return;
+        }
+
         if(Input.GetButton("Jump")== true)
         {
             m_characterController.AttemptJump();
