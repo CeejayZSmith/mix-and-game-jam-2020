@@ -114,7 +114,10 @@ public class CharacterController : MonoBehaviour
                 Debug.DrawLine(origin, hit.point, Color.red, Time.fixedDeltaTime);
 
                 // Figure out at what point in the frame did the collision occour.
-                float t = (hit.distance - kPHYSICS_SKIIN_DEPTH - 0.01f) / distanceMoved;
+                // -0.001f is to prevent the collider edges froming being in the exact same position when resolved.
+                // this can cause issues with vertical raycasts hiting walls, and horizontal hitting floors, as they are on the same plane
+                // If this causes pixel gap issues we could resolve this using using a dot product of the hit normal and side normal to return fales on the collision as we have no slops to account for.
+                float t = (hit.distance - kPHYSICS_SKIIN_DEPTH - 0.001f) / distanceMoved;
                 timeOfCollision = Mathf.Max(0, t);
                 // No uneven ground or slopes so the first collision will most likely be the only collision, unless are very high speeds.
                 // To fix this we can just iterate through every raycast and only set timeOfCollision if its smaller than the current timeOfCollision
@@ -172,6 +175,7 @@ public class CharacterController : MonoBehaviour
             float remainingTime = Time.fixedDeltaTime;
             if((hasVerticalCollision == true && hasHorizontalCollision == false) || (hasVerticalCollision == true && verticalFirst == true))
             {
+                Debug.Log("Vertical First");
                 float time = timeOfVerticalCollision * Time.fixedDeltaTime; 
                 newPosition = currentPosition + (currentVelocity * time);
                 remainingTime -= time;
@@ -189,7 +193,7 @@ public class CharacterController : MonoBehaviour
 
                 if(m_isCollisionLeft || m_isCollisionRight)
                 {
-                    newPosition += currentVelocity * Mathf.Max(0, ((timeOfHorizontalCollision * remainingTime) - time));
+                    newPosition += currentVelocity * Mathf.Max(0, (timeOfHorizontalCollision * remainingTime));
                 }
                 else
                 {
@@ -199,6 +203,7 @@ public class CharacterController : MonoBehaviour
             }
             else
             {
+                Debug.Log("Horizontal First");
                 float time = timeOfHorizontalCollision * Time.fixedDeltaTime; 
                 newPosition = currentPosition + (currentVelocity * time);
                 remainingTime -= time;
@@ -215,9 +220,9 @@ public class CharacterController : MonoBehaviour
                     m_isCollisionDown = CheckSideCollision(bottomLeftOffset + newPosition, bottomRightOffset + newPosition, Vector2.down, -currentVelocity.y * remainingTime, out timeOfVerticalCollision);
                 }
 
-                if(m_isCollisionLeft || m_isCollisionRight)
+                if(m_isCollisionDown || m_isCollisionUp)
                 {
-                    newPosition += currentVelocity * Mathf.Max(0, ((timeOfVerticalCollision * remainingTime) - time));
+                    newPosition += currentVelocity * Mathf.Max(0, (timeOfVerticalCollision * remainingTime));
                 }
                 else
                 {
