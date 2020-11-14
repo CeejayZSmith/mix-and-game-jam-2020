@@ -6,6 +6,7 @@ public class CharacterController : MonoBehaviour
 {
     public bool m_dead = false;
     private const float kPHYSICS_SKIIN_DEPTH = 0.03f;
+    private const float kPHYSICS_MAX_MOVE_DISTANCE = 0.05f;
 
     private const int kCOLLISION_SIDE_ITERATIONS = 5;
     [SerializeField]
@@ -71,7 +72,7 @@ public class CharacterController : MonoBehaviour
 
 
         Vector2 currentPosition = transform.position;
-        Vector2 resolvedPosition = ResolveCollision(currentPosition, ref m_velocity);
+        Vector2 resolvedPosition = ResolveCollision(currentPosition, ref m_velocity, Time.fixedDeltaTime);
 
         if(m_wasOnGround == false && m_isOnGround == true)
         {
@@ -205,10 +206,10 @@ public class CharacterController : MonoBehaviour
         return collidedWith.Count > 0;
     }
 
-    protected Vector2 ResolveCollision(Vector2 currentPosition, ref Vector2 currentVelocity)
+    protected Vector2 ResolveCollision(Vector2 currentPosition, ref Vector2 currentVelocity, float deltaTime)
     {
         Vector2 preVelocity = currentVelocity;
-        Vector2 newPosition = currentPosition + (currentVelocity * Time.fixedDeltaTime);
+        Vector2 newPosition = currentPosition + (currentVelocity * deltaTime);
         Vector2 bottomLeftOffset = new Vector2(-m_collider.bounds.size.x/2, -m_collider.bounds.size.y/2);
         Vector2 topRightOffset = -bottomLeftOffset;
         Vector2 topLeftOffset = new Vector2(bottomLeftOffset.x, topRightOffset.y);
@@ -217,21 +218,21 @@ public class CharacterController : MonoBehaviour
         float timeOfVerticalCollision = 0.0f;
         if(currentVelocity.y > 0)
         {
-            m_isCollisionUp = CheckSideCollision(topLeftOffset + currentPosition, topRightOffset + currentPosition, Vector2.up, currentVelocity.y * Time.fixedDeltaTime, out timeOfVerticalCollision);
+            m_isCollisionUp = CheckSideCollision(topLeftOffset + currentPosition, topRightOffset + currentPosition, Vector2.up, currentVelocity.y * deltaTime, out timeOfVerticalCollision);
         }
         else
         {
-            m_isCollisionDown = CheckSideCollision(bottomLeftOffset + currentPosition, bottomRightOffset + currentPosition, Vector2.down, -currentVelocity.y * Time.fixedDeltaTime, out timeOfVerticalCollision);
+            m_isCollisionDown = CheckSideCollision(bottomLeftOffset + currentPosition, bottomRightOffset + currentPosition, Vector2.down, -currentVelocity.y * deltaTime, out timeOfVerticalCollision);
         }
 
         float timeOfHorizontalCollision = 0.0f;
         if(currentVelocity.x > 0)
         {
-            m_isCollisionRight = CheckSideCollision(topRightOffset + currentPosition, bottomRightOffset + currentPosition, Vector2.right, currentVelocity.x * Time.fixedDeltaTime, out timeOfHorizontalCollision);
+            m_isCollisionRight = CheckSideCollision(topRightOffset + currentPosition, bottomRightOffset + currentPosition, Vector2.right, currentVelocity.x * deltaTime, out timeOfHorizontalCollision);
         }
         else
         {
-            m_isCollisionLeft = CheckSideCollision(topLeftOffset + currentPosition, bottomLeftOffset + currentPosition, Vector2.left, -currentVelocity.x * Time.fixedDeltaTime, out timeOfHorizontalCollision);
+            m_isCollisionLeft = CheckSideCollision(topLeftOffset + currentPosition, bottomLeftOffset + currentPosition, Vector2.left, -currentVelocity.x * deltaTime, out timeOfHorizontalCollision);
         }
 
         bool hasHorizontalCollision = m_isCollisionRight || m_isCollisionLeft;
@@ -240,16 +241,30 @@ public class CharacterController : MonoBehaviour
 
         if(hasCollision == false)
         {
-            newPosition = currentPosition + (currentVelocity * Time.fixedDeltaTime);
+            float distanceMovingLeftInTick = currentVelocity.magnitude * deltaTime;
+            
+            if(distanceMovingLeftInTick < kPHYSICS_MAX_MOVE_DISTANCE)
+            {
+                newPosition = currentPosition + (currentVelocity * deltaTime);
+            }
+            else
+            {
+                float deltaThisTick = deltaTime * (kPHYSICS_MAX_MOVE_DISTANCE / distanceMovingLeftInTick);
+                float deltaTimeRemaining = deltaTime - deltaThisTick;
+                newPosition = currentPosition + (currentVelocity * deltaThisTick);
+                return ResolveCollision(newPosition, ref currentVelocity, deltaTimeRemaining);
+            }
+
+
         }
         else
         {
             bool verticalFirst = timeOfVerticalCollision < timeOfHorizontalCollision;
 
-            float remainingTime = Time.fixedDeltaTime;
+            float remainingTime = deltaTime;
             if((hasVerticalCollision == true && hasHorizontalCollision == false) || (hasVerticalCollision == true && verticalFirst == true))
             {
-                float time = timeOfVerticalCollision * Time.fixedDeltaTime; 
+                float time = timeOfVerticalCollision * deltaTime; 
                 newPosition = currentPosition + (currentVelocity * time);
                 remainingTime -= time;
                 
@@ -277,7 +292,7 @@ public class CharacterController : MonoBehaviour
             }
             else
             {
-                float time = timeOfHorizontalCollision * Time.fixedDeltaTime; 
+                float time = timeOfHorizontalCollision * deltaTime; 
                 newPosition = currentPosition + (currentVelocity * time);
                 remainingTime -= time;
                 
