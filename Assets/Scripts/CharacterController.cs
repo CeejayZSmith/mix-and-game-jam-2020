@@ -175,7 +175,6 @@ public class CharacterController : MonoBehaviour
             float remainingTime = Time.fixedDeltaTime;
             if((hasVerticalCollision == true && hasHorizontalCollision == false) || (hasVerticalCollision == true && verticalFirst == true))
             {
-                Debug.Log("Vertical First");
                 float time = timeOfVerticalCollision * Time.fixedDeltaTime; 
                 newPosition = currentPosition + (currentVelocity * time);
                 remainingTime -= time;
@@ -203,7 +202,6 @@ public class CharacterController : MonoBehaviour
             }
             else
             {
-                Debug.Log("Horizontal First");
                 float time = timeOfHorizontalCollision * Time.fixedDeltaTime; 
                 newPosition = currentPosition + (currentVelocity * time);
                 remainingTime -= time;
