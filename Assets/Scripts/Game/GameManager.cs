@@ -92,7 +92,8 @@ public class GameManager : MonoBehaviour
                     checkedIndex++;
                 }
             }
-
+            // Stop moving if switched and input was given.
+            m_currentCharacterController.SetDesiredVelocityDirection(Vector2.zero);
             // Update function should handle setting this up with the camera and player input next frame at most (depending on script execution order).
             m_currentCharacterController = cc;
         }
