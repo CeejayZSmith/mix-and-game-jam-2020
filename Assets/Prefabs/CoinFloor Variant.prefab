@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9fc02ac3cc43a44194400033a233fc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scaleYOnly: 1
   m_squishScale: 0.8
   m_normalScale: 1
   m_animationLength: 0.15
@@ -39,7 +40,7 @@ PrefabInstance:
     - target: {fileID: 4078189790730571328, guid: af2a6b61669dde44f8ac5a566bf08bbc,
         type: 3}
       propertyPath: m_onPlayerLandedEvent.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4078189790730571328, guid: af2a6b61669dde44f8ac5a566bf08bbc,
         type: 3}
@@ -55,11 +56,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_onPlayerLandedEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 6739140609255221279}
+      objectReference: {fileID: 4873898846249164890}
     - target: {fileID: 4078189790730571328, guid: af2a6b61669dde44f8ac5a566bf08bbc,
         type: 3}
       propertyPath: m_onPlayerLandedEvent.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: IncrementPlayerMoney
+      value: DoAnimation
       objectReference: {fileID: 0}
     - target: {fileID: 4078189790730571328, guid: af2a6b61669dde44f8ac5a566bf08bbc,
         type: 3}

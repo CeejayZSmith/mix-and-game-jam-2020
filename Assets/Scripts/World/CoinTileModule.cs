@@ -6,8 +6,21 @@ public class CoinTileModule : MonoBehaviour
 {
     [SerializeField] private int m_moneyToGainOnLanded = 1;
 
-    public void IncrementPlayerMoney()
+    private Tile m_tile = null;
+    public void IncrementPlayerMoney(CharacterController cc)
     {
-        GameManager.Instance.m_playerAccountTracker.IncrementMoney(m_moneyToGainOnLanded);
+        GameManager.Instance.m_playerAccountTracker.IncrementMoney((int)(m_moneyToGainOnLanded * cc.m_multiplier));
+    }
+
+    private void OnEnable()
+    {
+        m_tile = GetComponent<Tile>();
+
+        m_tile.OnCharacterControllerLandedOnTile += IncrementPlayerMoney;
+    }
+
+    private void OnDisable()
+    {
+        m_tile.OnCharacterControllerLandedOnTile -= IncrementPlayerMoney;
     }
 }

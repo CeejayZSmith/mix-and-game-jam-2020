@@ -60,6 +60,31 @@ public class GameManager : MonoBehaviour
         #endif
     }
 
+    public bool CanUpgradeCurrentCharacter()
+    {
+        if(m_currentCharacterController == null)
+        {
+            return false;
+        }
+
+        if(m_playerAccountTracker.CanPurchase(GameValues.kCOST_OF_PLAYER_UPGRADE) == false)
+        {
+            return false;
+        }
+
+        return m_currentCharacterController.m_multiplier == 1.0f;
+    }
+
+    public void AttemptPurchaseCurrentPlayerUpgrade()
+    {
+        if(CanUpgradeCurrentCharacter() == true)
+        {
+            m_playerAccountTracker.SpendMoney(GameValues.kCOST_OF_PLAYER_UPGRADE);
+
+            m_currentCharacterController.Upgrade();
+        }
+    }
+
     public void TryPurchaseRandomCharacterControllerSwap()
     {
         int aliveCharacters = CalculateNumberOfAliveCharacters();

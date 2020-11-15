@@ -7,6 +7,8 @@ public class CharacterController : MonoBehaviour
     public bool m_dead = false;
     private const float kPHYSICS_SKIIN_DEPTH = 0.03f;
     private const float kPHYSICS_MAX_MOVE_DISTANCE = 0.05f;
+    public float m_multiplier = 1.0f;
+    public GameObject m_multiplierRenderer = null;
 
     private const int kCOLLISION_SIDE_ITERATIONS = 5;
     [SerializeField]
@@ -48,6 +50,14 @@ public class CharacterController : MonoBehaviour
         m_dead = false;
         this.gameObject.SetActive(true);
         m_inputTargetVelocity = Vector2.zero;
+        m_multiplier = 1;
+        m_multiplierRenderer.SetActive(false);
+    }
+
+    public void Upgrade()
+    {
+        m_multiplier = 3.0f;
+        m_multiplierRenderer.SetActive(true);
     }
 
     public void PrepareForPool()
@@ -56,6 +66,8 @@ public class CharacterController : MonoBehaviour
         m_velocity = Vector2.zero;
         this.gameObject.SetActive(false);
         m_inputTargetVelocity = Vector2.zero;
+        m_multiplier = 1;
+        m_multiplierRenderer.SetActive(false);
     }
     protected void FixedUpdate()
     {
@@ -147,7 +159,7 @@ public class CharacterController : MonoBehaviour
 
             if(tile != null)
             {
-                tile.OnPlayerLandedOnTile();
+                tile.OnPlayerLandedOnTile(this);
             }
         }
         m_isJumping = false;
