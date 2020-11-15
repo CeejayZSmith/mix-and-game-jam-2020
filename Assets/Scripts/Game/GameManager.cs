@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     public static float s_timeTaken = 0;
 
     private int m_currentMaxPlayers = 3;
+    public int MaxPlayers {get => m_currentMaxPlayers; }
 
     public CharacterController m_currentCharacterController = null;
     public GameObject m_characterControllerPrefab = null;

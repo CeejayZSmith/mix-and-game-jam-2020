@@ -25,6 +25,6 @@ public class PlayerAccountTracker
 
     public bool CanPurchase(int price)
     {
-        return price < m_moneyAmount;
+        return price <= m_moneyAmount;
     }
 }
