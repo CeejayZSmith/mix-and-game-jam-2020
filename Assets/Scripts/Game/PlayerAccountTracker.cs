@@ -9,9 +9,11 @@ public class PlayerAccountTracker
     private int m_moneyAmount = 0;
     public int MoneyAmount{get => m_moneyAmount;}
 
+    public int totalMoneyEarnt = 0;
     public void IncrementMoney(int moneyAmount)
     {
         m_moneyAmount += moneyAmount;
+        totalMoneyEarnt += moneyAmount;
         // Trigger sound of somethin here
     }
 

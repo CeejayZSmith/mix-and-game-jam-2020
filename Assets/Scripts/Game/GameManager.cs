@@ -9,6 +9,10 @@ public class GameManager : MonoBehaviour
     private static GameManager instance = null;
     public static GameManager Instance {get => instance;}
     public float m_timeAtStartOfGame = 0.0f;
+    public float m_lastTimeAverageUpdated = 0.0f;
+    public float m_averageCheck = 1.0f;
+    public int moneyEarntLastSecond = 0;
+    public int averageMoneyEarnt = 0;
 
     public static float s_timeTaken = 0;
 
@@ -244,6 +248,14 @@ public class GameManager : MonoBehaviour
     
     public void Update()
     {
+        if(m_lastTimeAverageUpdated + m_averageCheck < Time.unscaledTime)
+        {
+            m_lastTimeAverageUpdated = Time.unscaledTime;
+            int moneyDiff = m_playerAccountTracker.totalMoneyEarnt - moneyEarntLastSecond;
+            averageMoneyEarnt = Mathf.FloorToInt((float) moneyDiff / m_averageCheck);
+            moneyEarntLastSecond = m_playerAccountTracker.totalMoneyEarnt;
+        }
+
         m_hudView.RefreshDataUI(m_playerAccountTracker);
 
         if(m_currentMileStone != Milestone.LastMilestone)
