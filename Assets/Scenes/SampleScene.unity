@@ -2249,7 +2249,7 @@ PrefabInstance:
     - target: {fileID: 4470782128119935326, guid: bf152affa02914e49a3d9f5abe4def76,
         type: 3}
       propertyPath: m_text
-      value: Upgrade Current Player
+      value: x3 Player Upgrade
       objectReference: {fileID: 0}
     - target: {fileID: 8471766022631335106, guid: bf152affa02914e49a3d9f5abe4def76,
         type: 3}
@@ -4370,6 +4370,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &965354795 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4118244750422838713, guid: bf152affa02914e49a3d9f5abe4def76,
+    type: 3}
+  m_PrefabInstance: {fileID: 1053896053}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1014268711
 GameObject:
   m_ObjectHideFlags: 0
@@ -6369,6 +6381,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: af2a6b61669dde44f8ac5a566bf08bbc, type: 3}
+--- !u!114 &1497143474 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4118244750422838713, guid: bf152affa02914e49a3d9f5abe4def76,
+    type: 3}
+  m_PrefabInstance: {fileID: 363981503}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1525985163
 GameObject:
   m_ObjectHideFlags: 0
@@ -8447,6 +8471,7 @@ GameObject:
   - component: {fileID: 2016365770}
   - component: {fileID: 2016365769}
   - component: {fileID: 2016365771}
+  - component: {fileID: 2016365772}
   m_Layer: 5
   m_Name: ShopPanel
   m_TagString: Untagged
@@ -8544,6 +8569,22 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2016365772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2016365767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c9e3c11727acdf42a6986d6f5dbcfb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_buyPlayerButton: {fileID: 2029966926}
+  m_randomSwapButton: {fileID: 965354795}
+  m_playerUpgradeButton: {fileID: 1497143474}
+  m_winbutton: {fileID: 2123664223}
 --- !u!1001 &2029266434
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8648,6 +8689,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: af2a6b61669dde44f8ac5a566bf08bbc, type: 3}
+--- !u!114 &2029966926 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4118244750422838713, guid: bf152affa02914e49a3d9f5abe4def76,
+    type: 3}
+  m_PrefabInstance: {fileID: 4118244748692347895}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2057385488
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8950,6 +9003,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a36e88e27406d8a44a12482936f4b722, type: 3}
+--- !u!114 &2123664223 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4118244750422838713, guid: bf152affa02914e49a3d9f5abe4def76,
+    type: 3}
+  m_PrefabInstance: {fileID: 10258008}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2145554766
 PrefabInstance:
   m_ObjectHideFlags: 0

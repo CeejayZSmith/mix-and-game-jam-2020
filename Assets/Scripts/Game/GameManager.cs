@@ -85,11 +85,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void TryPurchaseRandomCharacterControllerSwap()
+    public bool CanPurchaseRandomCharacterSwap()
     {
         int aliveCharacters = CalculateNumberOfAliveCharacters();
-        if(m_playerAccountTracker.CanPurchase(GameValues.kCOST_OF_SWITCHING_TO_RANDOM_CONTROLLER) == true && CalculateNumberOfAliveCharacters() > 1)
+        return (m_playerAccountTracker.CanPurchase(GameValues.kCOST_OF_SWITCHING_TO_RANDOM_CONTROLLER) == true && CalculateNumberOfAliveCharacters() > 1);
+    }
+
+    public void TryPurchaseRandomCharacterControllerSwap()
+    {
+        if(CanPurchaseRandomCharacterSwap() == true)
         {
+            int aliveCharacters = CalculateNumberOfAliveCharacters();
             m_playerAccountTracker.SpendMoney(GameValues.kCOST_OF_SWITCHING_TO_RANDOM_CONTROLLER);
             // Oh no. list of character controllers contains alive and not alive characters for pooling.
             // Converting randomIndex to alive index is going to be messy unless everything is refactored. :(
@@ -124,9 +130,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public bool CanPurchaseWin()
+    {
+        return (m_playerAccountTracker.CanPurchase(GameValues.kCOST_OF_WIN) == true && m_showWin == false);
+    }
+
     public void TryPurchaseFinalUpgrade()
     {
-        if(m_playerAccountTracker.CanPurchase(GameValues.kCOST_OF_WIN) == true && m_showWin == false)
+        if(CanPurchaseWin() == true)
         {
             m_playerAccountTracker.SpendMoney(GameValues.kCOST_OF_WIN);
             s_timeTaken = Time.unscaledTime - m_timeAtStartOfGame;
@@ -151,6 +162,11 @@ public class GameManager : MonoBehaviour
         AttemptPurchaseCharacterController();
     }
 
+    public bool CanPurcshaseCharacterController()
+    {
+        return m_playerAccountTracker.CanPurchase(GameValues.kCOST_OF_CHARACTERCONTROLLER) == true && CalculateNumberOfAliveCharacters() < m_currentMaxPlayers;
+    }
+
     public int CalculateNumberOfAliveCharacters()
     {
         int i = 0;
@@ -166,7 +182,7 @@ public class GameManager : MonoBehaviour
     }
     public bool AttemptPurchaseCharacterController()
     {
-        if(m_playerAccountTracker.CanPurchase(GameValues.kCOST_OF_CHARACTERCONTROLLER) == true && CalculateNumberOfAliveCharacters() < m_currentMaxPlayers)
+        if(CanPurcshaseCharacterController() == true)
         {
             m_playerAccountTracker.SpendMoney(GameValues.kCOST_OF_CHARACTERCONTROLLER);
 
