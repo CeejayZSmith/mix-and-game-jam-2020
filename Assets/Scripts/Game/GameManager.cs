@@ -160,6 +160,7 @@ public class GameManager : MonoBehaviour
     public void IncreaseMaxPlayerCount(int amount)
     {
         m_currentMaxPlayers += amount;
+        AudioManager.Instance.UpgradeMaxPlayers();
     }
 
     public void TryPurchaseCharacterController()

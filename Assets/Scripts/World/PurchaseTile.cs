@@ -21,6 +21,7 @@ public class PurchaseTile : MonoBehaviour
         {
             GameManager.Instance.m_playerAccountTracker.SpendMoney(m_price);
             m_onPurchasedEvent?.Invoke();
+            AudioManager.Instance.PlayPlatformPurchase();
             // Free up a little memory and reduce amount of ui world canvases.
             Destroy(m_mainUIElement);
             m_purchased = true;

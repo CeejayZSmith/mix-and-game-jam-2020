@@ -58,6 +58,7 @@ public class CharacterController : MonoBehaviour
     {
         m_multiplier = 3.0f;
         m_multiplierRenderer.SetActive(true);
+        AudioManager.Instance.PlayUpgradeSound();
     }
 
     public void PrepareForPool()

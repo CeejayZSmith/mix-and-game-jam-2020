@@ -10,6 +10,10 @@ public class CoinTileModule : MonoBehaviour
     public void IncrementPlayerMoney(CharacterController cc)
     {
         GameManager.Instance.m_playerAccountTracker.IncrementMoney((int)(m_moneyToGainOnLanded * cc.m_multiplier));
+        if(cc == GameManager.Instance.m_currentCharacterController)
+        {
+            AudioManager.Instance.PlayCoinGatherNoise();
+        }
     }
 
     private void OnEnable()
