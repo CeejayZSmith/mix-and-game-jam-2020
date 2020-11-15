@@ -14,7 +14,7 @@ public class PlayerInput : MonoBehaviour
             movementInput.Normalize();
         }
 
-        if(m_characterController == null)
+        if(m_characterController == null || m_characterController.m_dead == true)
         {
             return;
         }

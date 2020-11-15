@@ -47,6 +47,7 @@ public class CharacterController : MonoBehaviour
         m_velocity = Vector2.zero;
         m_dead = false;
         this.gameObject.SetActive(true);
+        m_inputTargetVelocity = Vector2.zero;
     }
 
     public void PrepareForPool()
@@ -54,6 +55,7 @@ public class CharacterController : MonoBehaviour
         m_dead = true;
         m_velocity = Vector2.zero;
         this.gameObject.SetActive(false);
+        m_inputTargetVelocity = Vector2.zero;
     }
     protected void FixedUpdate()
     {

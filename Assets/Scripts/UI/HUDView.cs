@@ -8,6 +8,6 @@ public class HUDView : MonoBehaviour
     private TMPro.TMP_Text m_moneyUI = null;
     public void RefreshDataUI(PlayerAccountTracker pat)
     {
-        m_moneyUI.text = pat.MoneyAmount.ToString();
+        m_moneyUI.text = pat.MoneyAmount.ToString("n0");
     }
 }
